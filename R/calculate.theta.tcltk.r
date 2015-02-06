@@ -5,6 +5,8 @@
 #' @param juicer Argument specific for launching the function from JUICE software; logical (default = F) - is the function launched from JUICE? If \code{juicer = TRUE}, function is expecting that \code{species.data} have JUICE-specific structure, which enables to import data back to JUICE.
 
 #' @details Function \code{calculate.theta.tcltk} launches tcltk clickable interface, which enables to select methods and parameters used for calculation. 
+
+#' @export
 calculate.theta.tcltk <- function (input.matrix, species.data = NULL, juicer = T)
 {
 require (tcltk)
