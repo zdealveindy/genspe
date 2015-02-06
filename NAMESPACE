@@ -3,3 +3,4 @@
 export(beals.2)
 export(calculate.theta)
 export(calculate.theta.0)
+export(calculate.theta.tcltk)
