@@ -1,0 +1,10 @@
+Package: genspe
+Type: Package
+Title: Calculates several species habitat specialisation metrics based on co-occurrence data
+Version: 0.1
+Date: 2015-02-06
+Author: David Zeleny
+Maintainer: David Zeleny <zeleny.david@gmail.com>
+Description: More about what it does (maybe more than one line)
+Depends: parallel, vegan, betapart
+License: GPL-2
