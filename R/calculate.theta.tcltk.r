@@ -54,7 +54,7 @@ button1 <- tkbutton (frame.d, text = "Calculate", width = 10, height = 2, comman
 
 
 choose.label <- tklabel (frame.e.2, text = 'Select the file with beals smoothed data')
-choose.button <- tkbutton (frame.e.1, text = 'Select', command = function () assign ('beals.file', choose.files (), env = .GlobalEnv))
+choose.button <- tkbutton (frame.e.1, text = 'Select', command = function () assign ('beals.file', choose.files (), inherits = T))
 tkpack (choose.button)
 tkpack (choose.label)
 tkpack (tklabel (frame.e, text = 'Beals smoothing (included in method of Botta-Dukat 2012)'), anchor = 'w')
@@ -75,7 +75,7 @@ tkpack (button1)
 tkpack (parallel.checkbutton, parallel.no.cores.label, parallel.no.cores.entry, side = 'left')
 tkpack (parallel.label,  frame.f.1, anchor = 'w')
 
-tkpack (tklabel (frame.title, text = 'Calculation of generalists and specialists using co-occurrence species data \n Author: David Zeleny (zeleny.david@gmail.com) \n JUICE-R application (www.bit.ly/habitat-specialists)'), ipady = 10, ipadx = 10, padx = 10, pady = 10)
+tkpack (tklabel (frame.title, text = paste ('Calculation of generalists and specialists using co-occurrence species data \n Author: David Zeleny (zeleny.david@gmail.com) \n JUICE-R application (www.bit.ly/habitat-specialists) \n Version of library (genspe): ', as.character (packageVersion ('genspe')))), ipady = 10, ipadx = 10, padx = 10, pady = 10)
 
 tkpack (frame.title, side = 'top', expand = T, fill = 'both')
 tkpack (frame.a, side = "top", ipady = 10, ipadx = 10, padx = 10, pady = 10, anchor = "w", expand = T, fill = 'both')
