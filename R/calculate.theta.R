@@ -28,13 +28,7 @@ calculate.theta <- function (input.matrix, species.data = NULL, reps = 10, psamp
     }
   }
   
-#  present.species <- colSums (input.matrix) > 0
-#  if (any (!present.species)) 
-#  {
-#    input.matrix <- input.matrix [, present.species]
-#    warning (sum (!present.species), ' species have no occurrences and have been removed from input.matrix')
-#  }
-  
+
 # For beals method, it transforms input.matrix into beals smoothed form:  
   if (method == "beals")
   {
@@ -82,7 +76,7 @@ calculate.theta <- function (input.matrix, species.data = NULL, reps = 10, psamp
     workers <- makeCluster (no.cores)
     if (verbal) if (file.exists ('GS-progress.txt')) file.remove ('GS-progress.txt')
     clusterExport (workers, c('calculate.theta.0', 'input.matrix', 'select.spp', 'remove.out', 'psample', 'reps', 'method', 'parallel'), envir = environment ())
-    temp.res <- clusterApplyLB (workers, 1:Nspp, fun = function (sp) calculate.theta.0 (input.matrix = input.matrix, sp = sp, select.spp = select.spp , remove.out = remove.out, psample = psample, reps = reps, method = method, parallel = parallel, win.pb = NULL, verbal = verbal, juicer = juicer))
+    temp.res <- parLapply (workers, 1:Nspp, fun = function (sp) calculate.theta.0 (input.matrix = input.matrix, sp = sp, select.spp = select.spp , remove.out = remove.out, psample = psample, reps = reps, method = method, parallel = parallel, win.pb = NULL, verbal = verbal, juicer = juicer))
     stopCluster (workers)
   }
 
