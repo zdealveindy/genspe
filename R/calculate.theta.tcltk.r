@@ -50,7 +50,7 @@ entry1 <- tkentry (frame.b, width = 5, textvariable = tk.psample)
 label.entry2 <- tklabel (frame.c, text = "Number of random subsamples ")
 entry2 <- tkentry (frame.c, width = 5, textvariable = tk.reps)
 
-button1 <- tkbutton (frame.d, text = "Calculate", width = 10, height = 2, command = function () end.end <- calculate.theta (input.matrix = input.matrix, species.data = species.data, psample = as.numeric (tclvalue (tk.psample)), reps = as.numeric (tkget (entry2)), method = as.character (tclvalue (GSmethod)), beals.file = beals.file, parallel = as.logical (as.numeric (tclvalue (parallel))), no.cores = as.numeric (tclvalue (no.cores)), remove.out = as.logical (as.numeric (tclvalue (remove.out))), verbal = T, juicer = T, tcltk = T))
+button1 <- tkbutton (frame.d, text = "Calculate", width = 10, height = 2, command = function () calculate.theta (input.matrix = input.matrix, species.data = species.data, psample = as.numeric (tclvalue (tk.psample)), reps = as.numeric (tkget (entry2)), method = as.character (tclvalue (GSmethod)), beals.file = beals.file, parallel = as.logical (as.numeric (tclvalue (parallel))), no.cores = as.numeric (tclvalue (no.cores)), remove.out = as.logical (as.numeric (tclvalue (remove.out))), verbal = T, juicer = T, tcltk = T))
 
 
 choose.label <- tklabel (frame.e.2, text = 'Select the file with beals smoothed data')
@@ -75,7 +75,7 @@ tkpack (button1)
 tkpack (parallel.checkbutton, parallel.no.cores.label, parallel.no.cores.entry, side = 'left')
 tkpack (parallel.label,  frame.f.1, anchor = 'w')
 
-tkpack (tklabel (frame.title, text = paste ('Calculation of generalists and specialists using co-occurrence species data \n Author: David Zeleny (zeleny.david@gmail.com) \n JUICE-R application (www.bit.ly/habitat-specialists) \n Version of library (genspe): ', as.character (packageVersion ('genspe')))), ipady = 10, ipadx = 10, padx = 10, pady = 10)
+tkpack (tklabel (frame.title, text = paste ('Calculation of generalists and specialists using co-occurrence species data \n Author: David Zeleny (zeleny.david@gmail.com)', if (juicer) '\n JUICE-R application (www.bit.ly/habitat-specialists)', '\n Version of library genspe: ', as.character (packageVersion ('genspe')), '\nNumber of samples: ', dim (input.matrix)[1], ', number of species: ', dim (input.matrix)[2], sep = '')), ipady = 10, ipadx = 10, padx = 10, pady = 10)
 
 tkpack (frame.title, side = 'top', expand = T, fill = 'both')
 tkpack (frame.a, side = "top", ipady = 10, ipadx = 10, padx = 10, pady = 10, anchor = "w", expand = T, fill = 'both')
