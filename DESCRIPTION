@@ -1,10 +1,10 @@
 Package: genspe
 Type: Package
-Title: Calculates several species habitat specialisation metrics based on co-occurrence data
-Version: 0.7-13
-Date: 2015-02-06
-Author: David Zeleny
+Title: Co-occurrence based measure of species habitat specialization
+Version: 0.7-15
+Date: 2015-07-30
+Author: David Zeleny, partly based on published script by Fridley et al. 2007 and Zeleny 2009
 Maintainer: David Zeleny <zeleny.david@gmail.com>
-Description: More about what it does (maybe more than one line)
+Description: Calculates theta - co-occurrence based measure of species habitat specialization, introduced by Fridley et al. 2007. The package contains function optimized for use on large datasets, and provides also modified script to generate simulated data for evaluation of different beta diversity metrics.
 Depends: parallel, vegan, betapart
 License: GPL-2
