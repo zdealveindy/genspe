@@ -14,7 +14,7 @@
 #' @param highlight.species vector of species numbers which should be highlighted by color in ploted diagram (if \code{plotting = TRUE}). Default = \code{NULL}, which means that if plot is drawned, two species will be highlighted - the most generalized and the most specialized ones.
 #' @param simul.comm result of simul.comm function with parameters of individual species response curves
 #' @param Np number of samples
-#' @param sample.x positions of sampling along the gradient (default = NULL, means that random locations are generated)
+#' @param sample.x positions of sampling along the gradient. Default = \code{"random"}, meaning that random locations are generated. Other options include \code{"equal"} with samples distributed in equal distances, \code{"biased"} with samples accumulated toward higher values of the gradient. Can be also vector of the same length as \code{Np} with exact positions of the samples.
 #' @param no.ind mean number of individuals to be drawn from the species pool (if \code{based.on = 'individuals'})
 #' @param k mean proportion of species from species pool to be drawn into local community (if \code{based.on = 'species'})
 #' @param pa result table will be generated in presence-absence form (default \code{pa = TRUE})
@@ -138,7 +138,7 @@ simul.comm <- function (totS = 300, gr.length = 5000, niche.type = 'random', max
 
 #' @rdname simul.comm
 #' @export
-sample.comm <- function (simul.comm = NULL, Np = 300, sample.x = NULL, no.ind = 100, k = 0.2, seed = NULL, pa = F, based.on = 'individuals')
+sample.comm <- function (simul.comm = NULL, Np = 300, sample.x = "random", no.ind = 100, k = 0.2, seed = NULL, pa = F, based.on = 'individuals')
 {
   if (!is.null (seed)) set.seed (seed)
   if (is.null (simul.comm)) simul.comm <- simul.comm ()
@@ -147,7 +147,17 @@ sample.comm <- function (simul.comm = NULL, Np = 300, sample.x = NULL, no.ind = 
   based.on <- match.arg (based.on, BASED.ON)
   
   #Random sample intervals along gradient
-  if (is.null (sample.x)) sample.x <- trunc(sample(c(2:sc$gr.length)-1,Np, replace = T))
+  if (sample.x == "random") sample.x <- trunc(sample(c(2:sc$gr.length)-1,Np, replace = T)) else
+  #Equal sample intervals along gradient
+  if (sample.x == "equal") sample.x <- trunc(seq(2,sc$gr.length-1,length=Np)) else
+  #Biased sample intervals along gradient
+  if (sample.x == 'biased') {
+    exp.x<-sort(rexp(Np,rate=20))
+    exp.sample.x<-trunc(exp.x/(max(exp.x))*(sc$gr.length-1))
+    while( length(unique(exp.sample.x))!=Np )
+      exp.sample.x[duplicated(exp.sample.x)]<-exp.sample.x[duplicated(exp.sample.x)]+1
+    sample.x<-rev(max(x)-exp.sample.x)	#switch to other side of gradient
+  }
 
   A <- simul.comm$A.all[sample.x, ]
 

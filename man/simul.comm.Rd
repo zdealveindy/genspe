@@ -10,8 +10,9 @@ simul.comm(totS = 300, gr.length = 5000, niche.type = "random",
   spec.optima = "random", prop.random.species = 0, seed = NULL,
   plotting = F, highlight.species = NULL)
 
-sample.comm(simul.comm = NULL, Np = 300, sample.x = NULL, no.ind = 100,
-  k = 0.2, seed = NULL, pa = F, based.on = "individuals")
+sample.comm(simul.comm = NULL, Np = 300, sample.x = "random",
+  no.ind = 100, k = 0.2, seed = NULL, pa = F,
+  based.on = "individuals")
 }
 \arguments{
 \item{totS}{total number of species in simulation}
@@ -38,7 +39,7 @@ sample.comm(simul.comm = NULL, Np = 300, sample.x = NULL, no.ind = 100,
 
 \item{Np}{number of samples}
 
-\item{sample.x}{positions of sampling along the gradient (default = NULL, means that random locations are generated)}
+\item{sample.x}{positions of sampling along the gradient. Default = \code{"random"}, meaning that random locations are generated. Other options include \code{"equal"} with samples distributed in equal distances, \code{"biased"} with samples accumulated toward higher values of the gradient. Can be also vector of the same length as \code{Np} with exact positions of the samples.}
 
 \item{no.ind}{mean number of individuals to be drawn from the species pool (if \code{based.on = 'individuals'})}
 

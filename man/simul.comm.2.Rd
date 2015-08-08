@@ -86,4 +86,7 @@ points (nmds, display = 'si', cex = scale (sc$sample.x2, center = FALSE)*2, pch 
 \author{
 David Zeleny (zeleny.david@gmail.com) - based on the script of Jason Fridley (Fridley et al. 2007, Appendix S2), modified for two dimensions
 }
+\seealso{
+\code{\link{draw.ecospace}}
+}
 

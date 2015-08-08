@@ -48,7 +48,7 @@
 #' \item \code{sample.comm} List of 6 items storing initial settings of arguments in \code{sample.comm.2} (namely arguments \code{Np, based.on, no.ind, k, seed} and \code{pa}).
 #' \item \code{simul.comm} List of 14 items returned by function \code{simul.comm.2}.
 #' }
-
+#' @seealso \code{\link{draw.ecospace}}
 
 
 

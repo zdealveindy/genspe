@@ -2,23 +2,83 @@
 % Please edit documentation in R/calculate.theta.R
 \name{calculate.theta}
 \alias{beals.2}
+\alias{beta.div}
 \alias{calculate.theta}
 \alias{calculate.theta.0}
-\title{Calculates species habitat specialization using co-occurrence based metrics}
+\alias{calculate.theta.tcltk}
+\title{Calculates species habitat specialization using co-occurrence based \emph{theta} metric.}
 \usage{
-calculate.theta(input.matrix, species.data = NULL, reps = 10, psample = 5,
-  method = "multiplicative", beals.file = NULL, parallel = F,
-  no.cores = 2, remove.out = F, verbal = F, juicer = F, tcltk = F)
+calculate.theta(input.matrix, species.data = NULL, psample = 5, reps = 10,
+  method = "multiplicative", beta.div.method = "hellinger",
+  beta.div.sqrt.D = FALSE, beals.file = NULL, pa.transform = FALSE,
+  force.subsample = FALSE, parallel = FALSE, no.cores = 2,
+  remove.out = F, verbal = F, juicer = F, tcltk = F)
 
-calculate.theta.0(input.matrix, species.data, sp, select.spp, remove.out,
-  psample, reps, method, parallel, win.pb, verbal, juicer)
+calculate.theta.0(input.matrix, sp, select.spp, remove.out, psample, reps,
+  method, beta.div.method, beta.div.sqrt.D, beta.div.samp, force.subsample,
+  parallel, win.pb, verbal, juicer)
+
+calculate.theta.tcltk(input.matrix, species.data = NULL, juicer = T)
 
 beals.2(x, include = TRUE, verbal = FALSE)
+
+beta.div(Y, method = "hellinger", sqrt.D = FALSE, samp = TRUE,
+  nperm = 999, save.D = FALSE, clock = FALSE)
+}
+\arguments{
+\item{input.matrix}{Community data (\code{matrix} or \code{data.frame}, samples x species). If data are not presence-absence, the matrix will be automatically transformed into presence-absence and warning will be printed.}
+
+\item{species.data}{Species data (\code{matrix} or \code{data.frame}). If suplied, it should have at least two columns - the first containing species name, the second containing layer.}
+
+\item{psample}{Minimal frequency of species. Habitat specialization will be calculated for species occurring in number of samples equal or higher than minimal frequency threshold. Default = \code{5}.}
+
+\item{reps}{Number of random subsamples. Specifies how many times the fixed number of samples (specified by \code{psample}) will be randomly drawn from all samples containing target species. Default = \code{10}.}
+
+\item{method}{Beta-diversity algorithm used to calculate theta measure. Currently available are \code{'additive'}, \code{'multiplicative'}, \code{'pairwise.jaccard'}, \code{'pairwise.sorensen'}, \code{'pairwise.simpson'}, \code{'multi.sorensen'}, \code{'multi.simpson'}, \code{'rao'}, \code{'beals'} and \code{'beta.div'}). See Details for available options.}
+
+\item{beta.div.method,beta.div.sqrt.D}{Arguments for the function \code{beta.div}, if the \code{method = 'beta.div'}. See Details.}
+
+\item{beals.file}{Contains pre-calculated matrix of species co-occurrences. Can be used if \code{method = 'beals'} to speed up repeated calculation.}
+
+\item{pa.transform}{Logical; should the compositional data be transformed into presence-absence form? This choice applies only if \code{method} is \code{"rao"} or \code{"beta.div"}, since the other methods must be calculated on presence-absence data only (for these methods the matrix is automatically transformed into p/a form).}
+
+\item{force.subsample}{Logical; should the subsampling be forced even for beta diversity metrics which are not influenced by sample size? Default = \code{FALSE}, meaning that beta diversity metrics dependent on sample size (\code{method = c('additive', 'multiplicative', 'beals', 'multi.sorensen', 'multi.simpson')}) will subsample number of plots equal to \code{psample}, while the others (\code{method = c('pairwise.jaccard', 'pairwise.sorensen', 'pairwise.simpson', 'beta.div')}) will be calculated using all plots containing target species.}
+
+\item{parallel}{Logical; should be the parallel calculation used?}
+
+\item{no.cores}{Number of cores (if \code{parallel = TRUE}). Note that in case of large datasets the calculation may be limited by RAM of the computer, and increasing number of cores may result in saturation of RAM and calculation collapse.}
+
+\item{remove.out}{Logical; should be the algorithm removing outliers (sensu Botta-Dukat 2012) applied?}
+
+\item{verbal}{Logical; if \code{TRUE}, tcltk progress bar will popup during the calculation.}
+
+\item{juicer}{Logical argument specific for launching the function from JUICE software; logical (default = F) - is the function launched from JUICE? If \code{juicer = TRUE}, function is expecting that \code{species.data} have JUICE-specific structure, which enables to import data back to JUICE.}
+
+\item{tcltk}{Logical argument specific for launching the function from JUICE sofware.}
+
+\item{sp}{Internal argument; name of the species for which the current calculation is done.}
+
+\item{select.spp}{Internal argument.}
+
+\item{win.pb}{Internal argument.}
 }
 \description{
-Calculates species habitat specialization using co-occurrence based metrics
+Calculates species habitat specialization using co-occurrence based \emph{theta} metric.
+}
+\details{
+Function \code{calculate.theta} calculates theta metric of species habitat specialization using range of proposed beta diversity measures; it uses internal functions \code{calculate.theta.0} and \code{beals.2} (modified from the library \code{vegan}) . Function \code{calculate.theta.tcltk} launches tcltk clickable interface, which enables to select methods and parameters used for calculation; this function is primarily used to be lounched externally, e.g. from JUICE program.
+
+The function \code{calculate.theta} offers the following \code{method} argument to calculate beta diversity among samples:
+\itemize{
+\item \code{additive}: This is the original algorithm published by Fridley et al. (2007), in which beta diversity among samples containing given species is calculated by additive beta diversity measure.
+\item \code{multiplicative}: Uses the multiplicative Whittaker's measure of beta diversity instead of the original additive measure, as suggested by Zeleny (2009).
+\item \code{beals}: Multiplicative beta on species pool. Algorithm suggested by Botta-Dukat (2012), calculating the beta diversity using species pool matrix instead of the original species data matrix. Species pool matrix is calculated using Beals smoothing method (invented by Ewald 2002). While the previous multiplicative beta diversity method gives unbiased results only in case of not-saturated communities, this method should give unbiased results also in case of saturated communities. See Zeleny (2009) and Botta-Dukat (2012) for detail discussion of this saturated/not-saturated communities issue.
+\item \code{pairwise.jaccard}, \code{pairwise.sorensen}, \code{pairwise.simpson}, \code{multi.sorensen} and \code{multi.simpson}: Mean pairwise Jaccard, Sorensen and Simpson dissimilarity, and multiple Sorensen and Simpson dissimilarity based on reccomendations of Manthey & Fridley (2009). Authors suggested that neither the original additive algorithm (introduced by Fridley et al. 2007), neither the modified version using the multiplicative beta diversity (Zeleny 2009) is the best solution, and introduced other alternatives, using pairwise or multiple site beta diversity algorithm. Mean pairwise Jaccard dissimilarity (or Sorensen and Simpson, respectively) is based on calculating mean of Jaccard (or Sorensen and Simpson, respectively) dissimilarities among all pairs of samples in each subset, while multiple Sorensen (or Simpson, respectively) is using multiple-site Sorensen (or Simpson, respectively) algorithm introduced by Baselga et al. (2007)
+\item \code{rao}: Rao index of dissimilarity; this option has been introduced and used by Boulangeat et al. (2012). Advantage of Rao index is a possibility to incorporate known relationships among species using the among-species distance matrix. If this is not supplied and Rao index is calculated using presence-absence data, it is equal to Gini-Simpson diversity index and results are similar to pairwise Jaccard index.
+\item \code{beta.div}: Calculating the beta diversity as the variation in community matrix, using the concept introduced by Legendre & De Caceres (2013) and function \code{beta.div} written by Pierre Legendre (see Appendix S4.r of Legendre & De Caceres 2013; the version used here is from Legendre's website http://adn.biol.umontreal.ca/~numericalecology/labo/fonctions_r/beta-diversity.zip; however, I keep using \code{method = "percentagedifference"} instead of "\%difference" from the new version, since I had a problem with roxygenizing the R help files with \% sign). Two additional arguments need to be specified if \code{method = "beta.div"}, namely \code{beta.div.method} and \code{beta.div.sqrt.D} (the original arguments in the function \code{beta.div} are \code{method} and \code{sqrt.D}). \code{beta.div.method} is choosing one of 21 distance metrics, and \code{beta.div.sqrt.D} (logical) decides whether square root of distance should be used for calculation (important for non-euclidean distances like Bray-Curtis, called \code{"percentagedifference"} in \code{beta.div} function). Available distance metrics for \code{beta.div.method} are \code{c("euclidean", "manhattan", "modmeanchardiff", "profiles", "hellinger", "chord", "chisquare", "divergence", "canberra", "whittaker", "percentagedifference", "ruzicka", "wishart", "kulczynski", "ab.jaccard", "ab.sorensen","ab.ochiai","ab.simpson","jaccard","sorensen","ochiai")}.
+}
 }
 \author{
-David Zeleny (partly based on code written by Jason Fridley, Fridley et al. 2007)
+David Zeleny (zeleny.david@gmail.com). Partly based on codes written by Jason Fridley (Fridley et al. 2007) and David Zeleny (Zeleny 2009), extended for other published algorithms and optimised for speed and applicability on large datasets. Function \code{beals.2} is based on function \code{beals} from \code{vegan}, written by Miquel De Caceres and Jari Oksanen.
 }
 
