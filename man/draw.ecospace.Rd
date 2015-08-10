@@ -45,6 +45,6 @@ draw.ecospace (sample.comm.2 (simul.comm.2 (totS = 100)), resolution = 100)
 David Zeleny (zeleny.david@gmail.com)
 }
 \seealso{
-\code{\link{simul.comm.2}}, code{\link{sample.comm.2}}
+\code{\link{simul.comm.2}}, \code{\link{sample.comm.2}}
 }
 

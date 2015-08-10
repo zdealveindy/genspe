@@ -156,7 +156,7 @@ sample.comm <- function (simul.comm = NULL, Np = 300, sample.x = "random", no.in
     exp.sample.x<-trunc(exp.x/(max(exp.x))*(sc$gr.length-1))
     while( length(unique(exp.sample.x))!=Np )
       exp.sample.x[duplicated(exp.sample.x)]<-exp.sample.x[duplicated(exp.sample.x)]+1
-    sample.x<-rev(max(x)-exp.sample.x)	#switch to other side of gradient
+    sample.x<-rev(sc$gr.length - exp.sample.x)	#switch to other side of gradient
   }
 
   A <- simul.comm$A.all[sample.x, ]
