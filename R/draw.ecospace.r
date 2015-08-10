@@ -12,7 +12,7 @@
 #' @param box Logical; draw the box around plotting region?
 #' @param axes Logical; draw axes?
 #' @param ... Other arguments passed into the function \code{title}.
-#' @seealso \code{\link{simul.comm.2}}, code{\link{sample.comm.2}}
+#' @seealso \code{\link{simul.comm.2}}, \code{\link{sample.comm.2}}
 #' @examples
 #' library (genspe)
 #' draw.ecospace (sample.comm.2 (simul.comm.2 (totS = 100)), resolution = 100)
