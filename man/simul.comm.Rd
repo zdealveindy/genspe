@@ -11,8 +11,8 @@ simul.comm(totS = 300, gr.length = 5000, niche.type = "random",
   plotting = F, highlight.species = NULL)
 
 sample.comm(simul.comm = NULL, Np = 300, sample.x = "random",
-  no.ind = 100, k = 0.2, seed = NULL, pa = F,
-  based.on = "individuals")
+  no.ind = 100, k = 0.2, seed = NULL, pa = FALSE,
+  based.on = "individuals", standardize.rowsums = TRUE)
 }
 \arguments{
 \item{totS}{total number of species in simulation}
@@ -45,9 +45,11 @@ sample.comm(simul.comm = NULL, Np = 300, sample.x = "random",
 
 \item{k}{mean proportion of species from species pool to be drawn into local community (if \code{based.on = 'species'})}
 
-\item{pa}{result table will be generated in presence-absence form (default \code{pa = TRUE})}
+\item{pa}{result table will be generated in presence-absence form (default \code{pa = FALSE})}
 
 \item{based.on}{should the sampling of species from species pool be based on \code{'individuals'} or \code{'species'}? (default = \code{'individuals'})}
+
+\item{standardize.rowsums}{Standardizes the abundances of species in samples so as the sum of species abundances in sample is 100 (standardizes to rowsums equal to 100). Applies only if \code{pa = FALSE}. Default = \code{TRUE}.}
 }
 \value{
 The function \code{simul.comm} returns \code{list} with 10 items, describing the set of parameters used to simulate community of species response curves:
@@ -67,7 +69,7 @@ The function \code{sample.comm} returns \code{list} of 5 items with parameters o
 \item \code{a.mat} Matrix (sample x species) of species abundances in samples.
 \item \code{p.mat} Matrix (sample x species) of species occurrence probabilities in samples.
 \item \code{sample.x} Vector with positions of samples along the first and second simulated gradient, respectively (environmental variable).
-\item \code{sample.comm} List of 6 items storing initial settings of arguments in \code{sample.comm} (namely arguments \code{Np, based.on, no.ind, k, seed} and \code{pa}).
+\item \code{sample.comm} List of 7 items storing initial settings of arguments in \code{sample.comm} (namely arguments \code{Np, based.on, no.ind, k, seed, pa} and \code{standardize.rowsums}).
 \item \code{simul.comm} List of 10 items returned by function \code{simul.comm}.
 }
 }

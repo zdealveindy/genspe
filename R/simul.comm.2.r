@@ -16,8 +16,9 @@
 #' @param sample.x1,sample.x2 positions of sampling along the first (or second, respectively) gradient (default = NULL, means that random locations are generated)
 #' @param no.ind mean number of individuals to be drawn from the species pool (if \code{based.on = 'individuals'})
 #' @param k mean proportion of species from species pool to be drawn into local community (if \code{based.on = 'species'})
-#' @param pa result table will be generated in presence-absence form (default \code{pa = TRUE})
+#' @param pa result table will be generated in presence-absence form (default \code{pa = FALSE})
 #' @param based.on should the sampling of species from species pool be based on \code{'individuals'} or \code{'species'}? (default = \code{'individuals'})
+#' @param standardize.rowsums Standardizes the abundances of species in samples so as the sum of species abundances in sample is 100 (standardizes to rowsums equal to 100). Applies only if \code{pa = FALSE}. Default = \code{TRUE}.
 #' @examples
 #' sc <- sample.comm.2 (simul.comm.2 (gr1.length = 5000, gr2.length = 3000, totS = 300),
 #'  Np = 200, pa = FALSE, seed = 123)
@@ -28,7 +29,7 @@
 #' points (nmds, display = 'si', cex = scale (sc$sample.x1, center = FALSE)*2, pch = 21, bg = 'white')
 #' ordiplot (nmds, display = 'si', main = 'Environmental gradient 2')
 #' points (nmds, display = 'si', cex = scale (sc$sample.x2, center = FALSE)*2, pch = 21, bg = 'white')
-#' @return The function \code{simul.comm.2} returns \code{list} with 14 items, describing the set of parameters used to simulate community of species response curves:
+#' @return The function \code{simul.comm.2} returns \code{list} with 18 items, describing the set of parameters used to simulate community of species response curves:
 #' \itemize{
 #' \item \code{totS} Total number of species in simulation.
 #' \item \code{gr1.length, gr2.length} Length of the first and second gradient, respectively.
@@ -45,12 +46,10 @@
 #' \item \code{a.mat} Matrix (sample x species) of species abundances in samples.
 #' \item \code{p.mat} Matrix (sample x species) of species occurrence probabilities in samples.
 #' \item \code{sample.x1, sample.x2} Vector with positions of samples along the first and second simulated gradient, respectively (environmental variable).
-#' \item \code{sample.comm} List of 6 items storing initial settings of arguments in \code{sample.comm.2} (namely arguments \code{Np, based.on, no.ind, k, seed} and \code{pa}).
-#' \item \code{simul.comm} List of 14 items returned by function \code{simul.comm.2}.
+#' \item \code{sample.comm} List of 7 items storing initial settings of arguments in \code{sample.comm.2} (namely arguments \code{Np, based.on, no.ind, k, seed, pa} and \code{standardize.rowsums}).
+#' \item \code{simul.comm} List of 18 items returned by function \code{simul.comm.2}.
 #' }
 #' @seealso \code{\link{draw.ecospace}}
-
-
 
 #' @rdname simul.comm.2
 #' @export
@@ -184,7 +183,7 @@ simul.comm.2 <- function (totS = 300, gr1.length = 5000, gr2.length = 5000, nich
 
 #' @rdname simul.comm.2
 #' @export
-sample.comm.2 <- function (simul.comm = simul.comm.2 (), Np = 300, sample.x1 = NULL, sample.x2 = NULL, no.ind = 100, k = 0.2, seed = NULL, pa = F, based.on = 'individuals')
+sample.comm.2 <- function (simul.comm = simul.comm.2 (), Np = 300, sample.x1 = NULL, sample.x2 = NULL, no.ind = 100, k = 0.2, seed = NULL, pa = FALSE, based.on = 'individuals', standardize.rowsums = TRUE)
 {
   if (!is.null (seed)) set.seed (seed)
   sc <- simul.comm
@@ -225,22 +224,31 @@ sample.comm.2 <- function (simul.comm = simul.comm.2 (), Np = 300, sample.x1 = N
   if (based.on == 'individuals')
     for(i in 1:Np) {
       samp.prob<-p.mat[i,]		#probabilities of sampling each species in given location (based on rel abundance)
-      tab.samp <- table(sample(c(1:sc$totS),size=draws.rand[i],prob=samp.prob,replace=T))	#tabulated vector of spp identities after choosing "draws" no. of individuals
-      a.mat[i,][as.numeric(names(tab.samp))] <- tab.samp
+      if (sum (samp.prob) > 0) 
+        {
+        tab.samp <- table(sample(c(1:sc$totS), size = draws.rand[i], prob = samp.prob, replace = T)) 	#tabulated vector of spp identities after choosing "draws" no. of individuals
+        a.mat[i,][as.numeric(names(tab.samp))] <- tab.samp
+        } else a.mat[i,] <- 0
     } 
   #Sampling for random-sample-interval based on no of species
   if (based.on == 'species')
     for (i in 1:Np) {
       samp.prob <- p.mat [i,]
       spec.pool.size <- sum (samp.prob > 0)
-      no.spec <- rnorm (1, k*spec.pool.size)
-      tab.samp <- table(sample(c(1:sc$totS),size=no.spec,prob=samp.prob,replace=F))  #tabulated vector of spp identities after choosing no of species
-      a.mat[i,][as.numeric(names(tab.samp))] <- tab.samp
+      no.spec <- round (rnorm(1, k*spec.pool.size))
+      if (no.spec < 0) no.spec <- 0
+      if (no.spec > sum (samp.prob > 0)) no.spec <- sum (samp.prob > 0) # if number of selected species should be higher than number of nonzerro probabilities, it must decrease
+      if (sum (samp.prob) > 0) 
+        {
+        tab.samp <- table(sample(c(1:sc$totS), size=no.spec, prob=samp.prob, replace=FALSE))  #tabulated vector of spp identities after choosing no of species
+        a.mat[i,][as.numeric(names(tab.samp))] <- tab.samp*samp.prob[as.numeric(names(tab.samp))]
+        } else a.mat[i,] <- 0
     }
   
   colnames (a.mat) <- paste ('spec_', 1:dim (a.mat)[2], sep = '')
-  if (pa == T) a.mat[a.mat>0] <- 1		#presence-absence version
+  if (standardize.rowsums) a.mat <- vegan::decostand (a.mat, method = 'total')*100
+  if (pa) a.mat[a.mat>0] <- 1		#presence-absence version
   
-  result <- list (a.mat = a.mat, p.mat = p.mat, sample.x1 = sample.x1, sample.x2 = sample.x2, sample.comm = list (Np = Np, based.on = based.on, no.ind = if (based.on == 'individuals') no.ind else NULL, k = if (based.on == 'species') k else NULL, seed = seed, pa = pa), simul.comm = simul.comm)
+  result <- list (a.mat = a.mat, p.mat = p.mat, sample.x1 = sample.x1, sample.x2 = sample.x2, sample.comm = list (Np = Np, based.on = based.on, no.ind = if (based.on == 'individuals') no.ind else NULL, k = if (based.on == 'species') k else NULL, seed = seed, pa = pa, standardize.rowsums = standardize.rowsums), simul.comm = simul.comm)
   result
 }

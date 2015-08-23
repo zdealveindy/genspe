@@ -88,7 +88,7 @@ calculate.theta <- function (input.matrix, species.data = NULL, psample = 5, rep
   if (is.null (row.names (input.matrix))) row.names (input.matrix) <- seq (1, nrow (input.matrix))  # if input.matrix has no row.names, these are created as sequence of integers
 
 if (method %in% c('additive', 'multiplicative', 'pairwise.jaccard', 'pairwise.sorensen', 'pairwise.simpson', 'multi.sorensen', 'multi.simpson', 'beals')) pa.transform <- TRUE
-if (pa.transform) input.matrix <- ifelse (input.matrix >0, 1, 0)
+if (pa.transform) input.matrix <- ifelse (input.matrix > 0, 1, 0)
 
   # For which species to calculate theta metric:
   Nplots <- nrow (input.matrix)
